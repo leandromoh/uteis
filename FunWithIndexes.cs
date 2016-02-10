@@ -5,14 +5,15 @@ using System.Text;
 
 namespace ConsoleApplication2
 {
-    class FunWithIndexes
+    class Program
     {
         static void Main(string[] args)
         {
-            var array = new [] 
+            var array = new[]
             {
                 new {word = "bannanas", guess = "n"}, //[2,3,5]
                 new {word = "test test test test", guess = "test"}, //[0,5,10,15]
+                new {word = "Hello world, welcome to the universe.", guess = "o"} //[4,7,17,22]
             };
 
             foreach (var obj in array)
@@ -20,14 +21,15 @@ namespace ConsoleApplication2
                 Console.WriteLine(String.Join(" ", indexs(obj.word, obj.guess)));
 
                 int j = index(obj.word, obj.guess);
-                while (j >= 0) {
+                while (j >= 0)
+                {
                     Console.Write(j + " ");
                     j = index(obj.word, obj.guess, j + 1);
                 }
 
                 Console.WriteLine();
             }
-            
+
             Console.Read();
         }
 
@@ -62,28 +64,24 @@ namespace ConsoleApplication2
             var len1 = x.Length;
             var len2 = y.Length;
             var maxIndex = 0;
+            var j = 0;
+            var k = 0;
 
             if (startPosition >= len1 || len1 < len2)
                 return -1;
             else
                 maxIndex = len1 - len2;
 
-            int k;
-            bool stop;
-
             for (; startPosition <= maxIndex; startPosition++)
             {
-                k = startPosition;
-                stop = false;
-                for (var j = 0; j < len2; j++, k++)
+                for (k = startPosition, j = 0; j < len2; j++, k++)
                 {
                     if (x[k] != y[j])
                     {
-                        stop = true;
                         break;
                     }
                 }
-                if (!stop)
+                if (j == len2)
                 {
                     return startPosition;
                 }
