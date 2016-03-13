@@ -4,60 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Udsd
+namespace ConsoleApplication2
 {
     class RegexSubstitution
     {
-        private string pattern;
-        private string replacement;
-        private bool isCaseSensitive = false;
-        private bool isGlobal = true;
+        public string Replacement { get; set; }
+        public Regex Regex { get; private set; }
+        public Func<string, string> Replace { get; private set; }
 
-        delegate string RegexReplace(string fileName);
-        private RegexReplace regexReplace;
-        private Regex regex;
-		
         static void Main(string[] args)
         {
             RegexSubstitution regex = new RegexSubstitution(@".*?-", "banda -", false, false);
 
-            Console.WriteLine(regex.replace("12 - aaa.mp4"));
-            Console.WriteLine(regex.replace("12.- bbb.mp4"));
-            Console.WriteLine(regex.replace("12xdvxdsdfs- ccc.mp4"));
+            Console.WriteLine(regex.Replace("12 - aaa.mp4"));
+            Console.WriteLine(regex.Replace("12.- bbb.mp4"));
+            Console.WriteLine(regex.Replace("12xdvxdsdfs- ccc.mp4"));
             Console.ReadKey();
         }
-		
-        public RegexSubstitution(string Pattern, string Replacement, bool CaseSensitive, bool Global)
+
+        public RegexSubstitution(string Pattern, string Replacement, bool IsCaseSensitive, bool IsGlobal)
         {
-            isCaseSensitive = CaseSensitive;
-            isGlobal = Global;
-            pattern = Pattern;
-            replacement = Replacement;
+            this.Replacement = Replacement;
 
-            if (!isCaseSensitive)
-                pattern = "(?i)" + pattern + "(?-i)";
+            RegexOptions Options = RegexOptions.None;
 
-            if (isGlobal)
-                regexReplace = new RegexReplace(RegexReplaceGlobal);
+            if (!IsCaseSensitive)
+                Options |= RegexOptions.IgnoreCase;
+
+            Regex = new Regex(Pattern, Options);
+
+            if (IsGlobal)
+                Replace = fileName => Regex.Replace(fileName, this.Replacement);
             else
-                regexReplace = new RegexReplace(RegexReplaceNotGlobal);
-
-            regex = new Regex(pattern);
-        }
-
-        private string RegexReplaceGlobal(string fileName)
-        {
-            return regex.Replace(fileName, replacement);
-        }
-
-        private string RegexReplaceNotGlobal(string fileName)
-        {
-            return regex.Replace(fileName, replacement, 1);
-        }
-
-        public string replace(string fileName)
-        {
-            return regexReplace(fileName);
+                Replace = fileName => Regex.Replace(fileName, this.Replacement, 1);
         }
     }
 }
