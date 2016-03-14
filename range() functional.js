@@ -8,5 +8,5 @@ function rangeY(start, limit, step){
 }
 
 function rangeX(start, limit, step, func){
-		return func(start, limit) ? [start].concat(rangeX(start+step, limit, step, func)) : [];
+    return func(start, limit) ? [start].concat(rangeX(start+step, limit, step, func)) : [];
 }
