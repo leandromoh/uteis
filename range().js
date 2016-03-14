@@ -10,7 +10,10 @@ function range(start, count, step) {
         start = 0;
     }
     if(arguments.length < 3) {
-        step = 1;
+       if (arguments.length == 1) 
+          step = 1;
+       else
+          step = (start < limit) ? 1 : -1;
     }
 
     var func = (start < count) ? function(a, b) { return a < b; }
