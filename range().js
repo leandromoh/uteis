@@ -8,9 +8,8 @@ function range(start, limit, step) {
     if(arguments.length == 1) {
         limit = start;
         start = 0;
-        step = 1;
     }
-    if(arguments.length == 2) {
+    if(arguments.length < 3) {
         step = (start < limit) ? 1 : -1;
     }
 
