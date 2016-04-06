@@ -8,8 +8,8 @@ function range(start, limit, step){
 
 function rangeY(start, limit, step){
     var func = start < limit
-               ? function(a, b) { return a <= b; } 
-               : function(a, b) { return a >= b; };
+               ? function(a, b) { return a < b; } 
+               : function(a, b) { return a > b; };
                
     return rangeX(start, limit, step, func);
 }
@@ -20,8 +20,7 @@ function rangeX(start, limit, step, func){
            : [];
 }
 
-function getStep(params)
-{
+function getStep(params){
     return (params.length < 3) 
            ?  (params.length == 1)
               ?  (0 < params[0])
