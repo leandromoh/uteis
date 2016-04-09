@@ -1,0 +1,26 @@
+<script>
+function printDiv(id){
+var oPrint, oJan;
+oPrint  = window.document.getElementById(id).innerHTML;
+oJan    = window.open();
+oJan.document.write(oPrint);
+oJan.history.go();
+oJan.window.print();
+}
+</script>
+ 
+conteudo fora da div....1<br><br>
+ 
+<div id="x" style='border:8px solid #000000;'>
+COMEÇO da div<br>
+...<br>
+...<br>
+conteudo dentro da div para impressão<br>
+...<br>
+...<br>
+FIM da div<br>
+</div>
+
+conteudo fora da div....2<br><br>
+
+<a href="javascript:;" onclick="printDiv('x')">IMPRIMIR</a>
