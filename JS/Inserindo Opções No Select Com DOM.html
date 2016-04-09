@@ -1,0 +1,49 @@
+<html>
+<head>
+	<title>Inserindo dados no checkbox com DOM</title>
+<script language="javascript">
+
+function addOption()
+{
+    var input = document.getElementById("input");
+    var select = document.getElementById("select");
+	
+	if (!input.value)
+		return;
+	
+	var textNode = document.createTextNode(input.value);
+	var option = document.createElement("option");
+	
+	option.appendChild(textNode);
+	select.appendChild(option);
+	
+	input.value = "";    
+}
+
+function showSelected()
+{
+	alert(document.getElementById("select").value);
+}
+
+function removeOption()
+{
+	var select = document.getElementById("select");
+	var options = select.options;
+	var selected = select.value;
+	
+	for(var i = 0; i < options.length; i++)
+		if(options[i].firstChild.nodeValue == selected)
+			select.removeChild(options[i]);
+}
+</script>
+</head>
+<body>
+
+Opções: <select id="select"> </select>
+<p>Digite Aqui as opções a serem adicionadas no checkbox: </p>
+<p> <input type="text" maxlength="10" id="input">  </input> </p>
+<button onclick="addOption();">Adicionar Opção</button>
+<button onclick="showSelected();">Mostrar Opção Selecionada</button>
+<button onclick="removeOption();">Remover Opção Selecionada</button>
+</body>
+</html>

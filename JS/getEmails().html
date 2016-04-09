@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+			#textarea1, #textarea2
+			{
+				width: 400px;
+				height: 600px;
+			}
+			#btnPegaEmail
+			{
+				position: relative;
+				top: -450px;
+			}		
+		</style>
+		<script type="text/javascript">
+			function geraLista()
+			{
+				var textarea1 = document.getElementById("textarea1");
+				var textarea2 = document.getElementById("textarea2");
+				
+				textarea2.value = getEmails(textarea1.value).join(";\n");
+			}
+			
+			function getEmails(str)
+			{
+				function removeDuplicate(array)
+				{
+					var temp = {};
+					for (var i = 0; i < array.length; i++)
+					temp[array[i]] = true;
+					var r = [];
+					for (var key in temp)
+					r.push(key);
+					return r;
+				}
+				
+				var pattern = /[a-z\d._%+-]+@[a-z\d.-]+\.[a-z]{2,4}\b/gi;
+				
+				return removeDuplicate(str.match(pattern)).sort();
+			}
+		</script>
+	</head>
+
+	<body>
+		<p>
+			<textarea id="textarea1"></textarea>
+			<button type="button" id="btnPegaEmail" onclick="geraLista()">Pegar Email's</button>
+			<textarea id="textarea2"></textarea>
+		</p>
+	</body>
+</html>
