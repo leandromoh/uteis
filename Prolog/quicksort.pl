@@ -9,4 +9,4 @@ quicksort([],[]).
 quicksort([X|Xs],Ys) :- partition(Xs,X,Left,Right),
                         quicksort(Left,Ls),
                         quicksort(Right,Rs),
-                        append(Ls,[X|Rs],Ys).
+                        concat(Ls,[X|Rs],Ys).
