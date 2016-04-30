@@ -1,0 +1,51 @@
+String.prototype.removeAccents = function(){
+    var t = this,
+    a = {
+        'ú' : 'oe',
+        'å' : 'Oe',
+        'Ê' : 'ae',
+        '∆' : 'Ae',
+        '[¿¡¬√ƒ≈AAA?????????????A]' : 'A',
+        '[‡·‚„‰Âaaa?????????????a]' : 'a',
+        '[«CCCC]' : 'C',
+        '[Ácccc]' : 'c',
+        '[–D–]' : 'D',
+        '[dd]' : 'd',
+        '[»… ÀEEEEE????????]' : 'E',
+        '[ËÈÍÎeeeee????????]' : 'e',
+        '[GGGG]' : 'G',
+        '[gggg]' : 'g',
+        '[HH]' : 'H',
+        '[hh]' : 'h',
+        '[ÃÕŒœIIIIII??]' : 'I',
+        '[ÏÌÓÔiiiiii??]' : 'i',
+        'J' : 'J',
+        'j' : 'j',
+        'K' : 'K',
+        'k' : 'k',
+        '[LLL?L]' : 'L',
+        '[lll?l]' : 'l',
+        '[—NNN]' : 'N',
+        '[Ònnn?]' : 'n',
+        '[“”‘’÷ÿOOOOO?????????????]' : 'O',
+        '[ÚÛÙıˆ¯ooooo?????????????]' : 'o',
+        '[RRR]' : 'R',
+        '[rrr]' : 'r',
+        '[SSSä]' : 'S',
+        '[sssö]' : 's',
+        '[TTT]' : 'T',
+        '[ttt]' : 't',
+        '[Ÿ⁄€‹UUUUUUUUUUUU???????]' : 'U',
+        '[˘˙˚¸uuuuuuuuuuuu???????]' : 'u',
+        '[W???]' : 'W',
+        '[w???]' : 'w',
+        '[›Yü????]' : 'Y',
+        '[˝ˇy????]' : 'y',
+        '[ZZé]' : 'Z',
+        '[zzû]' : 'z'
+    };
+    for(var i in a){
+        t = t.replace(new RegExp(i, "g"), a[i]);
+    }
+    return t;
+};

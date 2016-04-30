@@ -8,12 +8,12 @@ HTMLElement.prototype.removeClass = function(klass){
 
 HTMLElement.prototype.addClass = function(klass){
     if(!this.hasClass(klass))
-		this.className += ' ' + klass;
+        this.className += ' ' + klass;
 }
 
 HTMLElement.prototype.toggleClass = function(klass){
-	if(this.hasClass(klass))
-		this.removeClass(klass);
-	else
-		this.addClass(klass);
+    if(this.hasClass(klass))
+        this.removeClass(klass);
+    else
+        this.addClass(klass);
 }

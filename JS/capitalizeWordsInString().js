@@ -4,9 +4,9 @@ function capitalizeWord(str)
         return str.toUpperCase();
 
     if(str.length > 3)
-    	return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-    else
-        return str.toLowerCase();
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+    return str.toLowerCase();
 }
 
 function capitalizeWordsInString(str)

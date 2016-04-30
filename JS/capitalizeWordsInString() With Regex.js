@@ -20,7 +20,7 @@ function capitalizeWordsInString(str)
    .replace(new RegExp('([a-zA-Z])([\\w'+acentuadas+']{3,})','g'), function(match, p1, p2){ return p1.toUpperCase() + p2.toLowerCase(); })
    .replace(new RegExp('(^|\\s)[a-zA-Z'+acentuadas+']{1,3}(\\s|$)','g'), function(x){ return x.toLowerCase(); })
    .replace(new RegExp('(^|\\s)([IVXLCDM]+)(\\s|$)','gi'), function(x){ return x.toUpperCase(); })
-   .replace(/(\s)(\s)/g, function(match, p1, p1){return p1;});
+   .replace(/(\s)(\s)/g, function(match, p1, p2){return p1;});
 }
 
 var y = x.map(capitalizeWordsInString);
