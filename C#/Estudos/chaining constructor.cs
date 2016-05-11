@@ -3,26 +3,44 @@ using System.Text;
 
 namespace ConsoleApplication1
 {
-    class Person
+    class Time
     {
-        public int Age { get; set; }
+        private string h, m, s;
 
-        public Person() : this(18) { }
+        public Time() : this("00") { }
 
-        public Person(int age)
+        public Time(string hora) : this(hora, "00") { }
+
+        public Time(string hora, string minuto) : this(hora, minuto, "00") { }
+
+        public Time(string hora, string minuto, string segundo)
         {
-            this.Age = age;
+            h = hora;
+            m = minuto;
+            s = segundo;
         }
 
-        public static void Main()
+        public override string ToString()
         {
-            var p1 = new Person();
-            var p2 = new Person(3);
+            return string.Format("{0}:{1}:{2}", h, m, s);
+        }
 
-            Console.WriteLine(p1.Age); //18
-            Console.WriteLine(p2.Age); //3
+        static void Main(string[] args)
+        {
+            /*
+              Quando usamos construtores em cadeia, o próximo construtor é chamado
+              antes do corpo do construtor atual ser executado.
+             
+              Por tanto, se dentro de cada construtor nos imprimíssemos o número de parâmetros
+              que ele recebe, quando executássemos new Time(), seria escrito na tela 3 2 1 0
+            */
 
-            Console.Read();
+            Console.WriteLine("Hora 1: " + new Time());
+            Console.WriteLine("Hora 2: " + new Time("02"));
+            Console.WriteLine("Hora 3: " + new Time("02", "10"));
+            Console.WriteLine("Hora 4: " + new Time("02", "10", "50"));
+
+            Console.ReadLine();
         }
     }
 }
