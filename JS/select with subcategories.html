@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <style type="text/css">
+            #categorias {
+                -webkit-appearance: none;
+                border: 2px solid black;
+                width: 50px;
+                padding: 5px 5px;
+            }
+        </style>
+        <script type="text/javascript">
+            window.onload = function() {
+                function isSubCategory(cat) {
+                    return cat.length != 1;
+                }
+
+                var letras = ['A', 'A1', 'A2', 'B', 'B1', 'B2'];
+                var select = document.getElementById('categorias');
+
+                letras.forEach(function(category) {
+                    var option = document.createElement("OPTION");
+                    option.value = 'value of ' + category;
+                    option.text = isSubCategory(category) ? '    ' + category : category;
+                    option.setAttribute('originalText', category);
+                    select.appendChild(option);
+                });
+
+                var coringa = document.createElement("OPTION");
+                coringa.style.display = "none";
+                select.appendChild(coringa);
+
+                var changeCoringaText = function() {
+                    var cur = select.options[select.selectedIndex];
+                    coringa.text = cur.getAttribute('originalText');
+                    coringa.value = cur.value;
+                    coringa.selected = true;
+                }
+
+                changeCoringaText();
+                select.onchange = changeCoringaText;
+            }
+        </script>
+    </head>
+    <body>
+        <select id="categorias"></select>
+    </body>
+</html>
