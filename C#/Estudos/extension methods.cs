@@ -12,6 +12,7 @@ namespace ConsoleApplication1.df
         }
     }
 
+    // Extension methods are just syntactic sugar and get transformed into static method calls passing in the instance.
     public static class MyExtensions
     {
         public static bool isBetween(this int i, int fromInclusive, int toInclusive)
