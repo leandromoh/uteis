@@ -12,7 +12,14 @@ namespace ConsoleApplication1.df
         }
     }
 
-    // Extension methods are just syntactic sugar and get transformed into static method calls passing in the instance.
+    /*
+        Extension methods are just syntactic sugar and are compiled into a call on the static method passing the instance as argument.
+        Therefore, the principle of encapsulation is not really being violated.
+        In fact, extension methods cannot access private variables in the type they are extending.
+        
+        Conclusion: number.isBetween(0, 10) becomes MyExtensions.isBetween(number, 0, 10)
+    */
+    
     public static class MyExtensions
     {
         public static bool isBetween(this int i, int fromInclusive, int toInclusive)
