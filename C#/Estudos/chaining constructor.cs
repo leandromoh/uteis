@@ -31,7 +31,7 @@ namespace ConsoleApplication1
               Quando usamos construtores em cadeia, o próximo construtor é chamado
               antes do corpo do construtor atual ser executado.
              
-              Por tanto, se dentro de cada construtor nos imprimíssemos o número de parâmetros
+              Portanto, se dentro de cada construtor nos imprimíssemos o número de parâmetros
               que ele recebe, quando executássemos new Time(), seria escrito na tela 3 2 1 0
             */
 
