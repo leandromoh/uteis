@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Marca/Desmarca Todos CheckBoxes</title>
+        <script type="text/javascript">
+            window.onload = function(){
+              document.getElementById("master").onclick = function(){
+                var e = document.getElementsByTagName("input");
+                var x = document.getElementById("texto").firstChild; 
+                var flag = x.nodeValue == "Marcar Todos";
+
+                x.nodeValue = flag ? "Desmarcar Todos" : "Marcar Todos";
+
+                for (var i = 0; i < e.length; i++)
+                  if (e[i].type == "checkbox")
+                    e[i].checked = flag;
+
+                this.checked = false;
+              }
+            }
+        </script>
+    </head>
+    <body>
+        <input id="master" type="checkbox"/><span id="texto">Marcar Todos</span><br/>
+        <input value="html" type="checkbox"/>HTML<br/>
+        <input value="xhtml" type="checkbox"/>XHTML<br/>
+        <input value="CSS" type="checkbox"/>CSS<br/>
+    </body>
+</html>
+
+<!-- Se você não quiser selecionar todos os checkboxes da pagina e sim de apenas 
+um formulario ou algo assim, você deve deixar os atributos "name" de todos os 
+checkboxes que você deseja marcar/desmarcar pelo "checkbox_master" com o mesmo nome. 
+E na linha onde fica a verificação no tipo do Input você também deverá adicionar uma 
+condição para verificar o nome do objeto. -->
