@@ -60,18 +60,20 @@ namespace Teste
 
             for (int i = 0; i < iLimit && m[i, 0] != 1; i++)
             {
+                if (m[i, n2] == 0)
+                {
+                    soma += n;
+                    continue;
+                }
+
                 for (int j = 0; j < jLimit; j++)
-                { 
+                {
                     if (m[i, j] == 1)
                     {
                         soma += j;
                         jLimit = j;
+                        break;
                     }
-                }
-
-                if (m[i, n2] == 0)
-                {
-                    soma += n;
                 }
             }
 
