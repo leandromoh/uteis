@@ -14,7 +14,7 @@ namespace ConsoleApplication1
             bool asd = true;
             int min = 0, max = 10000;
             //Console.WriteLine(getZeros(1000000));
-            for (; max <= 10020000; max += 10000)
+            for (; max <= 110020000; max += 10000)
             {
                 if (!asd)
                 {
