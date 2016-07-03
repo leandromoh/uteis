@@ -15,7 +15,7 @@ namespace DummyProject
 
             var a3 = new[] { 1, 2 };
 
-            Console.WriteLine(a1.SequenceEqual(a2) && a2.SequenceEqual(a3));
+            Console.WriteLine(a1.SequenceEqual(a2) && a2.SequenceEqual(a3)); // True
 
             Console.Read();
         }
