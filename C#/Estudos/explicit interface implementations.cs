@@ -4,6 +4,7 @@ namespace ConsoleApplication1
 {
     public class MyClass : InterfaceOne, InterfaceTwo, InterfaceThree
     {
+        //you CANT add Public access modifier to explicitly implemented interface
         void InterfaceOne.InterfaceMethod() //explicit implementation
         {
             Console.WriteLine("Only accessible if cast obj to InterfaceOne");
