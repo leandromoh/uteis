@@ -1,0 +1,87 @@
+using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+
+namespace ConsoleApplication1
+{
+    public static class Ex
+    {
+        public static void Main()
+        {
+            Console.WriteLine(Tests.Test1());
+            Console.WriteLine(Tests.Test2());
+            Console.WriteLine(Tests.Test3());
+
+            Console.Read();
+        }
+
+
+
+        public static IEnumerable<KeyValuePair<TKey, int>> CountBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
+        {
+            return source.CountBy(keySelector, null);
+        }
+
+        public static IEnumerable<KeyValuePair<TKey, int>> CountBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        {
+            if (source == null) throw new ArgumentNullException("source");
+            if (keySelector == null) throw new ArgumentNullException("keySelector");
+
+            return CountByImpl(source, keySelector, comparer);
+        }
+
+        private static IEnumerable<KeyValuePair<TKey, int>> CountByImpl<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        {
+            var dic = new Dictionary<TKey, int>(comparer);
+
+            foreach (var item in source)
+            {
+                TKey key = keySelector(item);
+
+                if (dic.ContainsKey(key))
+                {
+                    dic[key]++;
+                }
+                else
+                {
+                    dic[key] = 1;
+                }
+            }
+
+            return dic;
+        }
+    }
+    
+    
+    class Tests
+    {
+        public static bool Test1()
+        {
+            var result = new[] { 1, 2, 3, 4, 5, 6, 1, 2, 3, 1, 1, 2 }.CountBy(c => c);
+
+            var expecteds = new Dictionary<int, int>() { { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 1 }, { 6, 1 } };
+
+            return result.SequenceEqual(expecteds);
+        }
+
+        public static bool Test2()
+        {
+            var result = Enumerable.Range(1, 100).CountBy(c => c % 2);
+
+            var expecteds = new Dictionary<int, int>() { { 1, 50 }, { 0, 50 } };
+
+            return result.SequenceEqual(expecteds);
+        }
+
+        public static bool Test3()
+        {
+            var result = new[] { 'a', 'b', 'c', 'A', 'b', 'a' }.CountBy(c => Char.ToUpper(c));
+
+            var expecteds = new Dictionary<char, int>() { { 'A', 3 }, { 'B', 2 }, { 'C', 1 } };
+
+            return result.SequenceEqual(expecteds);
+        }
+    }
+}
