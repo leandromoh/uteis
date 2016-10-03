@@ -60,7 +60,7 @@ namespace ConsoleApplication1
             return resultSelector(source.AggregateRight(seed, func));
         }
 
-        public static TResult AggregateRightImp<TSource, TResult>(IList<TSource> e, TResult current, Func<TSource, TResult, TResult> func, int i)
+        private static TResult AggregateRightImp<TSource, TResult>(IList<TSource> e, TResult current, Func<TSource, TResult, TResult> func, int i)
         {
             while (i-- > 0)
             {
