@@ -1,37 +1,95 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace EffectiveLINQ
+namespace ConsoleApplication1
 {
-    static partial class LinqExtensions
+    static class Program
     {
-        private static T GetByIndex<T>(int index, Dictionary<int, T> dic, IEnumerator<T> e, out bool ended)
+        static void Main(string[] args)
         {
-            T val;
+            IEnumerable<int> source = Enumerable.Range(0, 10000);
+            IEnumerable<int> sub = Enumerable.Range(6560, 20);
+
+
+            for (int i = 0; i <= 6561; i++)
+            {
+                if (source.IndexOf(sub, i) != 6560)
+                {
+                    Console.WriteLine(i);
+                }
+            }
+
+
+            //getTime(() =>  Console.WriteLine(source.isInfixOf(sub)));
+            Console.WriteLine("fim");
+            Console.Read();
+        }
+
+        public static void getTime(Action action)
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            action();
+            stopwatch.Stop();
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+        }
+
+
+
+
+
+        private static T GetByIndex<T>(int index, IList<T> list, IEnumerator<T> e, out bool ended)
+        {
+            T val = default(T);
             ended = false;
 
-            if (!dic.TryGetValue(index, out val))
+            if (!(index < list.Count))
             {
                 if (e.MoveNext())
                 {
-                    val = dic[index] = e.Current;
+                    val = e.Current;
+                    list.Add(val);
                     return val;
                 }
                 ended = true;
             }
+            else
+            {
+                val = list[index];
+            }
 
             return val;
+        }
+
+        private static int? GetCountIfCheap<T>(this IEnumerable<T> source)
+        {
+            var col = source as ICollection<T>;
+            if (col != null)
+            {
+                return col.Count;
+            }
+
+            //var read = source as IReadOnlyCollection<T>;
+            //if (col != null)
+            //{
+            //    return read.Count;
+            //}
+
+            return null;
         }
 
         public static int IndexOf<T>(this IEnumerable<T> source, IEnumerable<T> target, int startIndex = 0, IEqualityComparer<T> comparer = null)
         {
             comparer = comparer ?? EqualityComparer<T>.Default;
 
-            T[] y = target.ToArray();
-            int? len1 = source.TryGetLenght();
-            int len2 = y.Length;
+            IList<T> y = (target as IList<T>) ?? target.ToArray();
+            int? len1 = source.GetCountIfCheap();
+            int len2 = y.Count;
             int? maxIndex = null;
+            int i = 0;
             int j = 0;
             int k = 0;
 
@@ -55,15 +113,15 @@ namespace EffectiveLINQ
                     }
                 }
 
-                var dic = new Dictionary<int, T>();
+                var list = new List<T>();
                 var ended = false;
                 T value;
 
-                for (; maxIndex.HasValue ? startIndex <= maxIndex : true; startIndex++)
+                for (; maxIndex.HasValue ? i <= maxIndex : true; i++)
                 {
-                    for (k = startIndex, j = 0; j < len2; j++, k++)
+                    for (k = i, j = 0; j < len2; j++, k++)
                     {
-                        value = GetByIndex(k, dic, e1, out ended);
+                        value = GetByIndex(k, list, e1, out ended);
 
                         if (ended)
                         {
@@ -80,12 +138,50 @@ namespace EffectiveLINQ
 
                     if (j == len2)
                     {
-                        return startIndex;
+                        return i + startIndex;
                     }
                 }
 
                 return -1;
             }
+        }
+
+
+
+        public static bool isInfixOf<TSource>(this IEnumerable<TSource> source, IEnumerable<TSource> subpart)
+        {
+            return source.Tails().Any(t => t.StartsWith(subpart));
+        }
+
+        public static bool StartsWith<T>(this IEnumerable<T> first, IEnumerable<T> second, IEqualityComparer<T> comparer = null)
+        {
+            if (first == null) throw new ArgumentNullException("first");
+            if (second == null) throw new ArgumentNullException("second");
+
+            comparer = comparer ?? EqualityComparer<T>.Default;
+
+            using (var firstIter = first.GetEnumerator())
+            {
+                return second.All(item => firstIter.MoveNext() && comparer.Equals(firstIter.Current, item));
+            }
+        }
+
+        private static IEnumerable<IEnumerable<TSource>> Tails<TSource>(this IEnumerable<TSource> source)
+        {
+            int i = 0;
+
+            using (var e = source.GetEnumerator())
+            {
+                while (e.MoveNext())
+                {
+                    checked
+                    {
+                        yield return source.Skip(i++);
+                    }
+                }
+            }
+
+            yield return Enumerable.Empty<TSource>();
         }
     }
 }
