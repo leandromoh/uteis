@@ -72,12 +72,9 @@ namespace EffectiveLINQ
 
             foreach (var item in source)
             {
-                if (predicate(item))
+                if (predicate(item) && ++found == nth)
                 {
-                    if (++found == nth)
-                    {
-                        return item;
-                    }
+                    return item;
                 }
             }
 
