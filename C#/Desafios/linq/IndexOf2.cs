@@ -1,3 +1,19 @@
+#region License and Terms
+// Copyright (c) 2016 Leandro F. Vieira (leandromoh). All rights reserved.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+#endregion
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -81,6 +97,7 @@ namespace ConsoleApplication1
             return null;
         }
 
+        //takes two lists and returns True iff the second list is contained, wholly and intact, anywhere within the first.
         public static int IndexOf<T>(this IEnumerable<T> source, IEnumerable<T> target, int startIndex = 0, IEqualityComparer<T> comparer = null)
         {
             comparer = comparer ?? EqualityComparer<T>.Default;
@@ -98,7 +115,7 @@ namespace ConsoleApplication1
                 if (startIndex >= len1 || len1 < len2)
                     return -1;
                 else
-                    maxIndex = len1.Value - len2;
+                    maxIndex = len1.Value - len2 - startIndex;
             }
 
             int toSkip = startIndex;
@@ -126,7 +143,7 @@ namespace ConsoleApplication1
                         if (ended)
                         {
                             len1 = k;
-                            maxIndex = len1.Value - len2;
+                            maxIndex = len1.Value - len2 - startIndex;
                             break;
                         }
 
