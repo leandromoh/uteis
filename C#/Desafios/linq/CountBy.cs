@@ -22,7 +22,7 @@ using System.Runtime.CompilerServices;
 
 namespace ConsoleApplication1
 {
-    public static class Ex
+    public static class Program
     {
         public static void Main()
         {
@@ -69,33 +69,33 @@ namespace ConsoleApplication1
             return dic;
         }
     }
-    
-    
+
+
     class Tests
     {
         public static bool Test1()
         {
-            var result = new[] { 1, 2, 3, 4, 5, 6, 1, 2, 3, 1, 1, 2 }.CountBy(c => c);
+            IEnumerable<KeyValuePair<int, int>> result = new[] { 1, 2, 3, 4, 5, 6, 1, 2, 3, 1, 1, 2 }.CountBy(c => c);
 
-            var expecteds = new Dictionary<int, int>() { { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 1 }, { 6, 1 } };
+            IEnumerable<KeyValuePair<int, int>> expecteds = new Dictionary<int, int>() { { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 1 }, { 6, 1 } };
 
             return result.SequenceEqual(expecteds);
         }
 
         public static bool Test2()
         {
-            var result = Enumerable.Range(1, 100).CountBy(c => c % 2);
+            IEnumerable<KeyValuePair<int, int>> result = Enumerable.Range(1, 100).CountBy(c => c % 2);
 
-            var expecteds = new Dictionary<int, int>() { { 1, 50 }, { 0, 50 } };
+            IEnumerable<KeyValuePair<int, int>> expecteds = new Dictionary<int, int>() { { 1, 50 }, { 0, 50 } };
 
             return result.SequenceEqual(expecteds);
         }
 
         public static bool Test3()
         {
-            var result = new[] { 'a', 'b', 'c', 'A', 'b', 'a' }.CountBy(c => Char.ToUpper(c));
+            IEnumerable<KeyValuePair<string, int>> result = new[] { "a", "B", "c", "A", "b", "A" }.CountBy(c => c, StringComparer.OrdinalIgnoreCase);
 
-            var expecteds = new Dictionary<char, int>() { { 'A', 3 }, { 'B', 2 }, { 'C', 1 } };
+            IEnumerable<KeyValuePair<string, int>> expecteds = new Dictionary<string, int>() { { "a", 3 }, { "B", 2 }, { "c", 1 } };
 
             return result.SequenceEqual(expecteds);
         }
