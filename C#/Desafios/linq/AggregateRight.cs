@@ -24,24 +24,21 @@ using System.Text.RegularExpressions;
 
 namespace ConsoleApplication1
 {
-    public static class Ex
+    public static class Program
     {
         public static void Main()
         {
+            var result = new string[] { "1", "2", "3", "4" }.AggregateRight((a, b) => string.Format("({0}/{1})", a, b));
+            Console.WriteLine(result == "(1/(2/(3/4)))");
 
-            //4
-            Console.WriteLine(new int[] { 8, 12, 24, 4 }.AggregateRight((a, b) => a / b));
+            result = new int[] { 1, 2, 3 }.AggregateRight("4", (a, b) => string.Format("({0}/{1})", a, b));
+            Console.WriteLine(result == "(1/(2/(3/4)))");
 
+            result = new int[] { }.AggregateRight("4", (a, b) => string.Format("({0}/{1})", a, b));
+            Console.WriteLine(result == "4");
 
-            Console.WriteLine(new int[] { 8, 12, 24, 4 }.AggregateRight("2", (a, b) => string.Format("({0} / {1})", a, b)));
-            //8
-            Console.WriteLine(new int[] { 8, 12, 24, 4 }.AggregateRight(2, (a, b) => a / b));
-            //2
-            Console.WriteLine(new int[] { }.AggregateRight(2, (a, b) => a / b));
-
-
-            //7
-            Console.WriteLine(new int[] { 8, 12, 24, 4 }.AggregateRight("2", (a, b) => string.Format("{1}{0}", a, b), str => str.Length));
+            int length = new int[] { 1, 2, 3 }.AggregateRight("4", (a, b) => string.Format("({0}/{1})", a, b), str => str.Length);
+            Console.WriteLine(length == "(1/(2/(3/4)))".Length);
 
             Console.Read();
         }
