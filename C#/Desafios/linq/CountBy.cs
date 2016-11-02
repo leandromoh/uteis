@@ -1,4 +1,5 @@
 #region License and Terms
+// MoreLINQ - Extensions to LINQ to Objects
 // Copyright (c) 2016 Leandro F. Vieira (leandromoh). All rights reserved.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,32 +15,40 @@
 // limitations under the License.
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-
-namespace ConsoleApplication1
+namespace MoreLinq
 {
-    public static class Program
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
+    static partial class MoreEnumerable
     {
-        public static void Main()
-        {
-            Console.WriteLine(Tests.Test1());
-            Console.WriteLine(Tests.Test2());
-            Console.WriteLine(Tests.Test3());
-
-            Console.Read();
-        }
-
-
-
+        /// <summary>
+        /// Applies a key-generating function to each element of a sequence and returns a sequence of 
+        /// unique keys and their number of occurrences in the original sequence.
+        /// </summary>
+        /// <typeparam name="TSource">Type of the elements of the source sequence.</typeparam>
+        /// <typeparam name="TKey">Type of the projected element.</typeparam>
+        /// <param name="source">Source sequence.</param>
+        /// <param name="keySelector">Function that transforms each item of source sequence into a key to be compared against the others.</param>
+        /// <returns>A sequence of unique keys and their number of occurrences in the original sequence.</returns>
         public static IEnumerable<KeyValuePair<TKey, int>> CountBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
             return source.CountBy(keySelector, null);
         }
 
+        /// <summary>
+        /// Applies a key-generating function to each element of a sequence and returns a sequence of 
+        /// unique keys and their number of occurrences in the original sequence.
+        /// An additional argument specifies a comparer to use for testing equivalence of keys.
+        /// </summary>
+        /// <typeparam name="TSource">Type of the elements of the source sequence.</typeparam>
+        /// <typeparam name="TKey">Type of the projected element.</typeparam>
+        /// <param name="source">Source sequence.</param>
+        /// <param name="keySelector">Function that transforms each item of source sequence into a key to be compared against the others.</param>
+        /// <param name="comparer">The equality comparer to use to determine whether or not keys are equal.
+        /// If null, the default equality comparer for <c>TSource</c> is used.</param>
+        /// <returns>A sequence of unique keys and their number of occurrences in the original sequence.</returns>
         public static IEnumerable<KeyValuePair<TKey, int>> CountBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
         {
             if (source == null) throw new ArgumentNullException("source");
@@ -51,10 +60,11 @@ namespace ConsoleApplication1
         private static IEnumerable<KeyValuePair<TKey, int>> CountByImpl<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, IEqualityComparer<TKey> comparer)
         {
             var dic = new Dictionary<TKey, int>(comparer);
+            var keys = new List<TKey>();
 
             foreach (var item in source)
             {
-                TKey key = keySelector(item);
+                var key = keySelector(item);
 
                 if (dic.ContainsKey(key))
                 {
@@ -63,41 +73,11 @@ namespace ConsoleApplication1
                 else
                 {
                     dic[key] = 1;
+                    keys.Add(key);
                 }
             }
 
-            return dic;
-        }
-    }
-
-
-    class Tests
-    {
-        public static bool Test1()
-        {
-            IEnumerable<KeyValuePair<int, int>> result = new[] { 1, 2, 3, 4, 5, 6, 1, 2, 3, 1, 1, 2 }.CountBy(c => c);
-
-            IEnumerable<KeyValuePair<int, int>> expecteds = new Dictionary<int, int>() { { 1, 4 }, { 2, 3 }, { 3, 2 }, { 4, 1 }, { 5, 1 }, { 6, 1 } };
-
-            return result.SequenceEqual(expecteds);
-        }
-
-        public static bool Test2()
-        {
-            IEnumerable<KeyValuePair<int, int>> result = Enumerable.Range(1, 100).CountBy(c => c % 2);
-
-            IEnumerable<KeyValuePair<int, int>> expecteds = new Dictionary<int, int>() { { 1, 50 }, { 0, 50 } };
-
-            return result.SequenceEqual(expecteds);
-        }
-
-        public static bool Test3()
-        {
-            IEnumerable<KeyValuePair<string, int>> result = new[] { "a", "B", "c", "A", "b", "A" }.CountBy(c => c, StringComparer.OrdinalIgnoreCase);
-
-            IEnumerable<KeyValuePair<string, int>> expecteds = new Dictionary<string, int>() { { "a", 3 }, { "B", 2 }, { "c", 1 } };
-
-            return result.SequenceEqual(expecteds);
+            return keys.Select(k => new KeyValuePair<TKey, int>(k, dic[k]));
         }
     }
 }
