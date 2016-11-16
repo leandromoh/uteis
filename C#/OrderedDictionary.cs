@@ -17,7 +17,6 @@ namespace ConsoleApplication1
     {
         private Dictionary<TKey, TValue> dic;
         private ICollection<KeyValuePair<TKey, TValue>> col;
-        private IDictionary idic;
 
         private List<TKey> keys;
 
@@ -60,8 +59,6 @@ namespace ConsoleApplication1
         private void AfterConstructor()
         {
             col = dic;
-            idic = dic;
-
             keys = new List<TKey>();
         }
 
@@ -134,7 +131,7 @@ namespace ConsoleApplication1
 
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            return idic.Contains(item);
+            return col.Contains(item);
         }
 
         public bool ContainsKey(TKey key)
