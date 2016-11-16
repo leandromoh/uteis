@@ -8,10 +8,7 @@
  *
  */
 
-using System.Collections;
-using System.Collections.Generic;
-
-namespace ConsoleApplication1
+namespace System.Collections.Generic
 {
     public class OrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable, IReadOnlyCollection<KeyValuePair<TKey, TValue>>
     {
