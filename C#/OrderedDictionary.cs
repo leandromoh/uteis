@@ -1,7 +1,7 @@
 /**
  * Generic Implementation of OrderedDictionary from .NET
  *
- * The order in which the items are returned during a enumeration is the same as insertion order.
+ * The order in which the items are returned during an enumeration is the same as insertion order.
  *
  * Copyright (c) 2016 Leandro F. Vieira (https://github.com/leandromoh/)
  * Free under terms of the MIT license: http://www.opensource.org/licenses/mit-license.php
@@ -14,7 +14,7 @@ namespace System.Collections.Generic
     {
         private Dictionary<TKey, TValue> dic;
         private ICollection<KeyValuePair<TKey, TValue>> col;
-
+        private HashSet<TKey> keysSet;
         private List<TKey> keys;
 
         public OrderedDictionary()
@@ -41,23 +41,14 @@ namespace System.Collections.Generic
             AfterConstructor();
         }
 
-        public OrderedDictionary(IDictionary<TKey, TValue> dictionary)
-        {
-            dic = new Dictionary<TKey, TValue>(dictionary);
-            AfterConstructor();
-        }
-
-        public OrderedDictionary(IDictionary<TKey, TValue> dictionary, IEqualityComparer<TKey> comparer)
-        {
-            dic = new Dictionary<TKey, TValue>(dictionary, comparer);
-            AfterConstructor();
-        }
-
         private void AfterConstructor()
         {
             col = dic;
             keys = new List<TKey>();
+            keysSet = new HashSet<TKey>(dic.Comparer);
         }
+
+        // IDictionary<TKey, TValue> Implementation 
 
         public TValue this[TKey key]
         {
@@ -68,28 +59,12 @@ namespace System.Collections.Generic
 
             set
             {
-                if (keys.IndexOf(key) == -1)
+                if (keysSet.Add(key))
                 {
                     keys.Add(key);
                 }
 
                 dic[key] = value;
-            }
-        }
-
-        public int Count
-        {
-            get
-            {
-                return dic.Count;
-            }
-        }
-
-        public bool IsReadOnly
-        {
-            get
-            {
-                return col.IsReadOnly;
             }
         }
 
@@ -109,26 +84,11 @@ namespace System.Collections.Generic
             }
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
-        {
-            Add(item.Key, item.Value);
-        }
-
         public void Add(TKey key, TValue value)
         {
             dic.Add(key, value);
+            keysSet.Add(key);
             keys.Add(key);
-        }
-
-        public void Clear()
-        {
-            dic.Clear();
-            keys.Clear();
-        }
-
-        public bool Contains(KeyValuePair<TKey, TValue> item)
-        {
-            return col.Contains(item);
         }
 
         public bool ContainsKey(TKey key)
@@ -136,10 +96,74 @@ namespace System.Collections.Generic
             return dic.ContainsKey(key);
         }
 
+        public bool Remove(TKey key)
+        {
+            if (dic.Remove(key))
+            {
+                keys.Remove(key);
+                keysSet.Remove(key);
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            return dic.TryGetValue(key, out value);
+        }
+
+        // ICollection<T> Implementation
+
+        public int Count
+        {
+            get
+            {
+                return col.Count;
+            }
+        }
+
+        public bool IsReadOnly
+        {
+            get
+            {
+                return col.IsReadOnly;
+            }
+        }
+
+        public void Add(KeyValuePair<TKey, TValue> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        public void Clear()
+        {
+            col.Clear();
+            keys.Clear();
+            keysSet.Clear();
+        }
+
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            return col.Contains(item);
+        }
+
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             col.CopyTo(array, arrayIndex);
         }
+
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            if (col.Remove(item))
+            {
+                keys.Remove(item.Key);
+                keysSet.Remove(item.Key);
+                return true;
+            }
+            return false;
+        }
+
+        // IEnumerable<T> Implementation
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
@@ -147,24 +171,7 @@ namespace System.Collections.Generic
                 yield return new KeyValuePair<TKey, TValue>(k, dic[k]);
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
-        {
-            bool b = col.Remove(item);
-            if (b) keys.Remove(item.Key);
-            return b;
-        }
-
-        public bool Remove(TKey key)
-        {
-            bool b = dic.Remove(key);
-            if (b) keys.Remove(key);
-            return b;
-        }
-
-        public bool TryGetValue(TKey key, out TValue value)
-        {
-            return dic.TryGetValue(key, out value);
-        }
+        // IEnumerable Implementation
 
         IEnumerator IEnumerable.GetEnumerator()
         {
