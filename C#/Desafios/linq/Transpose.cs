@@ -1,6 +1,6 @@
 #region License and Terms
 // MoreLINQ - Extensions to LINQ to Objects
-// Copyright (c) 2017 Leandro F. Vieira (leandromoh). All rights reserved.
+// Copyright (c) 2016 Leandro F. Vieira (leandromoh). All rights reserved.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,18 +54,18 @@ namespace MoreLinq
         {
             source = source.Select(Memoize).Memoize();
 
-            var padList = new[] { Tuple.Create(pad, false) }.Repeat();
+            var padList = new[] { new { value = pad, native = false } }.Repeat();
 
-            var e = source.Select(p => p.Select(y => Tuple.Create(y, true)).Concat(padList).GetEnumerator());
+            var e = source.Select(p => p.Select(y => new { value = y, native = true }).Concat(padList).GetEnumerator());
 
             while (true)
             {
                 e = e.Where(x => x.MoveNext());
 
-                if (e.All(x => x.Current.Item2 == false))
+                if (e.All(x => x.Current.native == false))
                     yield break;
 
-                yield return e.Select(p => p.Current.Item1);
+                yield return e.Select(p => p.Current.value);
             }
         }
 
@@ -79,22 +79,25 @@ namespace MoreLinq
         }
 
 
+        private static IEnumerable<IEnumerable<T>> Transpose<T>(ICollection<ICollection<T>> source)
+        {
+            return TransposeImpl(source, x => x.Where(y => y.MoveNext()).Select(y => y.Current));
+        }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <returns></returns>
-        public static IEnumerable<IEnumerable<T>> TransposeCol<T>(this ICollection<ICollection<T>> source)
+        private static IEnumerable<IEnumerable<T>> Transpose<T>(ICollection<ICollection<T>> source, T pad)
+        {
+            return TransposeImpl(source, x => x.Select(y => y.MoveNext() ? y.Current : pad));
+        }
+
+        private static IEnumerable<IEnumerable<T>> TransposeImpl<T>(ICollection<ICollection<T>> source, Func<IEnumerable<IEnumerator<T>>, IEnumerable<T>> func)
         {
             var maxCount = source.MaxBy(x => x.Count).Count;
 
             var enumerators = source.Select(p => p.GetEnumerator()).ToList();
 
-            for(int i = 0; i < maxCount; i++)
+            for (int i = 0; i < maxCount; i++)
             {
-                yield return enumerators.Where(x => x.MoveNext()).Select(x => x.Current).ToList();
+                yield return func(enumerators).ToList();
             }
         }
     }
