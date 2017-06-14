@@ -24,8 +24,6 @@ namespace MoreLinq
     static partial class MoreEnumerable
     {
 
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -34,9 +32,27 @@ namespace MoreLinq
         /// <returns></returns>
         public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> source)
         {
+            return TransposeImpl(source, x => !x.Any());
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <param name="pad"></param>
+        /// <returns></returns>
+        public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> source, T pad)
+        {
+            //shall pass pad to TransposeBla
+            return TransposeImpl(source, x => x.All(y => y.Equals(pad)));
+        }
+
+        private static IEnumerable<IEnumerable<T>> TransposeImpl<T>(this IEnumerable<IEnumerable<T>> source, Func<IEnumerable<T>, bool> predicate)
+        {
             foreach (var i in TransposeBla(source))
             {
-                if (!i.Any())
+                if (predicate(i))
                     break;
 
                 yield return i;
@@ -47,7 +63,7 @@ namespace MoreLinq
         {
             var list = new List<IEnumerator<T>>();
             var values = new List<List<T>>();
-            var empty = new T[0];
+            var empty = new T[] { }; // should have a list with pad if pad overload
             var count = 0;
             var e = source.Select((p, i) =>
             {
