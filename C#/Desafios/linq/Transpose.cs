@@ -23,6 +23,9 @@ namespace MoreLinq
 
     static partial class MoreEnumerable
     {
+
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -31,73 +34,60 @@ namespace MoreLinq
         /// <returns></returns>
         public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> source)
         {
-            source = source.Select(Memoize).Memoize();
-
-            var e = source.Select(p => p.GetEnumerator()).Where(HasNext);
-
-            while (e.Any())
+            foreach (var i in TransposeBla(source))
             {
-                yield return e.Select(p => p.Current);
+                if (!i.Any())
+                    break;
 
-                e = e.Where(HasNext);
+                yield return i;
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source"></param>
-        /// <param name="pad"></param>
-        /// <returns></returns>
-        public static IEnumerable<IEnumerable<T>> Transpose<T>(this IEnumerable<IEnumerable<T>> source, T pad)
+        private static IEnumerable<IEnumerable<T>> TransposeBla<T>(IEnumerable<IEnumerable<T>> source)
         {
-            source = source.Select(Memoize).Memoize();
+            var list = new List<IEnumerator<T>>();
+            var values = new List<List<T>>();
+            var empty = new T[0];
+            var count = 0;
+            var e = source.Select((p, i) =>
+            {
+                if (i < list.Count)
+                    return list[i];
 
-            var padList = new[] { new { value = pad, native = false } }.Repeat();
+                list.Add(p.GetEnumerator());
 
-            var e = source.Select(p => p.Select(y => new { value = y, native = true }).Concat(padList).GetEnumerator());
+                return list[i];
+            });
+
 
             while (true)
             {
-                e = e.Where(x => x.MoveNext());
+                var inner_count = count;
 
-                if (e.All(x => x.Current.native == false))
-                    yield break;
+                yield return e.SelectMany((p, j) =>
+                {
+                    if (j >= values.Count)
+                    {
+                        values.Add(new List<T>());
+                    }
 
-                yield return e.Select(p => p.Current.value);
-            }
-        }
+                    var row = values[j];
 
-        private static bool HasNext<T>(IEnumerator<T> e)
-        {
-            var hasNext = e.MoveNext();
+                    if (inner_count < row.Count)
+                    {
+                        return new[] { row[inner_count] };
+                    }
 
-            if (!hasNext) e.Dispose();
+                    while (inner_count >= row.Count && p.MoveNext())
+                    {
+                        row.Add(p.Current);
+                    }
 
-            return hasNext;
-        }
+                    return inner_count < row.Count ? new[] { row[inner_count] }
+                                                   : empty;
+                });
 
-
-        private static IEnumerable<IEnumerable<T>> Transpose<T>(ICollection<ICollection<T>> source)
-        {
-            return TransposeImpl(source, x => x.Where(y => y.MoveNext()).Select(y => y.Current));
-        }
-
-        private static IEnumerable<IEnumerable<T>> Transpose<T>(ICollection<ICollection<T>> source, T pad)
-        {
-            return TransposeImpl(source, x => x.Select(y => y.MoveNext() ? y.Current : pad));
-        }
-
-        private static IEnumerable<IEnumerable<T>> TransposeImpl<T>(ICollection<ICollection<T>> source, Func<IEnumerable<IEnumerator<T>>, IEnumerable<T>> func)
-        {
-            var maxCount = source.MaxBy(x => x.Count).Count;
-
-            var enumerators = source.Select(p => p.GetEnumerator()).ToList();
-
-            for (int i = 0; i < maxCount; i++)
-            {
-                yield return func(enumerators).ToList();
+                count++;
             }
         }
     }
