@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.1/Rx.min.js"></script>
+        <script type="text/javascript">
+        function getNumber(x) { return isNumber(x.value) ? Number(x.value) : 0; }
+        function isNumber(n) { return !isNaN(parseFloat(n)) && isFinite(n); }
+
+        $(function(){
+        
+            //https://cdnjs.com/libraries 
+            //https://www.learnrxjs.io/operators/combination/combinelatest.html
+            //http://adamborek.com/combinelatest-withlatestfrom-zip/
+            
+            var obs  = $('.number')
+                           .toArray()
+                           .map(e => Rx.Observable.fromEvent(e, 'change')
+                                                  .map(x => getNumber(x.target))
+                                                  .startWith(getNumber(e)));
+            
+            var source = Rx.Observable.combineLatest(obs, (...args) => args.reduce((x, y) => x + y, 0));
+            
+            source.subscribe(sum => $("#sum").val(sum));
+        });
+        </script>
+    </head>
+    <body>
+        A: <input class="number" type="text" value="1"><br>
+        B: <input class="number" type="text" value="4"><br>
+        C: <input class="number" type="text" value="3"><br><br>
+        SOMA: <input id="sum" type="text">
+    </body>
+</html>
