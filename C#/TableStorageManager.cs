@@ -40,9 +40,15 @@ namespace ConsoleApp1
         }
     }
 
-    public class TableStorageManager<T> where T : TableEntity, new()
+    public class TableStorageManager<T> : ITableStorageManager<T> where T : TableEntity, new()
     {
         private CloudTable _table;
+
+        public TableStorageManager(IOptions<AzureStorageOptions> storageOptions)
+            : this(storageOptions.Value.OrderTableName, storageOptions.Value.ConnectionString)
+        {
+
+        }
 
         public TableStorageManager(string CloudTableName, string ConnectionString)
         {
@@ -52,41 +58,42 @@ namespace ConsoleApp1
             CloudStorageAccount storageAccount = CloudStorageAccount.Parse(ConnectionString);
             CloudTableClient tableClient = storageAccount.CreateCloudTableClient();
             _table = tableClient.GetTableReference(CloudTableName);
+            var tableWasCreated = _table.CreateIfNotExistsAsync().Result;
         }
 
-        public async Task<TableResult> InsertEntity(T entity)
+        public async Task<TableResult> InsertEntityAsync(T entity)
         {
             var insertOperation = TableOperation.Insert(entity);
             return await _table.ExecuteAsync(insertOperation);
         }
 
-        public async Task<TableResult> UpdateEntity(T entity)
+        public async Task<TableResult> UpdateEntityAsync(T entity)
         {
             var insertOrMergeOperation = TableOperation.Replace(entity);
             return await _table.ExecuteAsync(insertOrMergeOperation);
         }
 
-        public async Task<TableResult> DeleteEntity(T entity)
+        public async Task<TableResult> DeleteEntityAsync(T entity)
         {
             var DeleteOperation = TableOperation.Delete(entity);
             return await _table.ExecuteAsync(DeleteOperation);
         }
 
-        public async Task<IList<TableResult>> DeleteEntitiesOlderThan(DateTime date)
+        public async Task<IList<TableResult>> DeleteEntitiesOlderThanAsync(DateTime date)
         {
             string filter = TableQuery.GenerateFilterConditionForDate(
                 "Timestamp",
                 QueryComparisons.LessThan,
                 date);
 
-            var elements = await RetrieveEntity(filter);
+            var elements = await RetrieveEntityAsync(filter);
 
-            var deleteResults = await DeleteEntityInBatch(elements);
+            var deleteResults = await DeleteEntityInBatchAsync(elements);
 
             return deleteResults;
         }
 
-        public async Task<IList<TableResult>> DeleteEntityInBatch(List<T> elements)
+        public async Task<IList<TableResult>> DeleteEntityInBatchAsync(List<T> elements)
         {
             // Split into chunks of 100 for batching
             List<List<T>> rowsChunked = elements
@@ -111,7 +118,7 @@ namespace ConsoleApp1
             return tableResults;
         }
 
-        public async Task<List<T>> RetrieveEntity(string query = null, CancellationToken ct = default)
+        public async Task<List<T>> RetrieveEntityAsync(string query = null, CancellationToken ct = default)
         {
             var DataTableQuery = new TableQuery<T>();
 
