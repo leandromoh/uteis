@@ -27,6 +27,30 @@ namespace ConsoleApp2
             _columnsThatIfEmptyShouldParseObjectAsNull = columnsThatIfEmptyShouldObjectParseAsNull?.ToHashSet() ?? new HashSet<string>();
             _getNewInstance = CreateInstanceHelper.GetInstanceGenerator<T>(_mappedColumns);
         }
+            
+        public GenericRecordParser(
+            IEnumerable<(int index, string propertyName)> mappedColumns, 
+            IEnumerable<string> columnsThatIfEmptyShouldObjectParseAsNull = null)
+            : this (FillEmptyIndexes(mappedColumns), columnsThatIfEmptyShouldObjectParseAsNull)
+        {
+
+        }
+            
+        private static IEnumerable<string> FillEmptyIndexes(IEnumerable<(int index, string propertyName)> mappedColumns)
+        {
+            var columns = mappedColumns.ToArray();
+
+            if (!columns.Any())
+                return Enumerable.Empty<string>();
+
+            var lenght = columns.Max(x => x.index) + 1;
+            var filledColumns = Enumerable.Repeat<string>(null, lenght).ToArray();
+
+            foreach (var (index, propertyName) in columns)
+                filledColumns[index] = propertyName;
+
+            return filledColumns;
+        }
 
         public T Parse(string line)
         {
